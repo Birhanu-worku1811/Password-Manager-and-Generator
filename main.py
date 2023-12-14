@@ -79,6 +79,37 @@ def save():
 
 
 # ---------------------------- UI SETUP ------------------------------- #
+def find_password():
+    global password_label
+    website = website_entry.get()
+    try:
+        with open("data.json") as data_file:
+            data = json.load(data_file)
+
+    except FileNotFoundError:
+        messagebox.showinfo(title="Error", message="No Data File Found")
+
+    else:
+        if website in data:
+            email = data[website]["email"]
+            password = data[website]["password"]
+            result_window = Toplevel(window)
+            result_window.title(website)
+            result_window.config(padx=20, pady=20)
+
+            email_or_username_label = Label(result_window, text=f"Email: {email}")
+            email_or_username_label.grid(row=0, column=0, pady=5)
+            email_copy_button = Button(result_window, text="Copy Email", command=lambda: pyperclip.copy(email))
+            email_copy_button.grid(row=0, column=1, padx=5)
+
+            password_label = Label(result_window, text=f"Password: {password}")
+            password_label.grid(row=1, column=0, pady=5)
+            password_copy_button = Button(result_window, text="Copy Password", command=lambda: pyperclip.copy(password))
+            password_copy_button.grid(row=1, column=1, padx=5)
+
+        else:
+            messagebox.showinfo(title="Error", message=f"No details for {website} exists")
+# ---------------------------- Find Password------------------------------- #
 
 
 window = Tk()
@@ -99,8 +130,8 @@ password_label = Label(text="Password:")
 password_label.grid(row=3, column=0)
 
 # entries
-website_entry = Entry(width=35)
-website_entry.grid(row=1, column=1, columnspan=2)
+website_entry = Entry(width=21)
+website_entry.grid(row=1, column=1)
 website_entry.focus()
 email_entry = Entry(width=35)
 email_entry.grid(row=2, column=1, columnspan=2)
@@ -108,6 +139,9 @@ email_entry.insert(0, "birhanuworku2011@gmail.com")
 password_entry = Entry(width=21)
 password_entry.grid(row=3, column=1)
 
+# Buttons
+search_button = Button(text="Search", width=13, command=find_password)
+search_button.grid(row=1, column=2)
 generate_password_button = Button(text="Generate Password", command=generate_password)
 generate_password_button.grid(row=3, column=2)
 add_button = Button(text="Add", width=36, command=save)
