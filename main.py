@@ -1,3 +1,4 @@
+import json
 from tkinter import *
 from tkinter import messagebox
 import random
@@ -35,6 +36,12 @@ def save():
     website = website_entry.get()
     email = email_entry.get()
     password = password_entry.get()
+    new_data = {
+        website: {
+            "email": email,
+            "password": password,
+        }
+    }
 
     if len(website) == 0 or len(password) == 0 or len(email) == 0:
         messagebox.showinfo(title="OOps", message="Please fill in all the fields")
@@ -44,11 +51,31 @@ def save():
                                          message=f"These are the details: \nEmail: {email}\nPassword: {password}\n "
                                                  f"SAVE?? ")
         if is_okay:
-            with open("data.txt", "a") as data_file:
-                data_file.write(f"{website} | {email} | {password}\n")
+            try:
+                with open("data.json", "r") as data_file:
+                    # reading old data
+                    data = json.load(data_file)
+                    # updating old data with new data
+                    data.update(new_data)
+            except FileNotFoundError:
+                with open("data.json", "w") as data_file:
+                    # saving updated data
+                    json.dump(new_data, data_file, indent=4)
+            else:
+                # saving updated data
+                data.update(new_data)
+                with open("data.json", "w") as data_file:
+                    # saving updated data
+                    json.dump(data, data_file, indent=4)
+
+                    password_entry.delete(0, END)
+                    email_entry.delete(0, END)
+
+            finally:
                 website_entry.delete(0, END)
                 password_entry.delete(0, END)
                 email_entry.delete(0, END)
+                website_entry.focus()
 
 
 # ---------------------------- UI SETUP ------------------------------- #
